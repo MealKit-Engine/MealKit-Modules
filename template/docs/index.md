@@ -9,7 +9,7 @@ One paragraph: what this module gives a game, and when to use it.
 ## Adding
 
 ```
-tools\module.ps1 add -Project <your project> https://github.com/__OWNER__/module-mymodule#v0.1.0
+tools\module.ps1 add -Project <your project> mymodule
 ```
 
 Then connect it to your game. Put the state in your simulation state and call the module from `World::step()`:

@@ -1,7 +1,7 @@
 """MealKit 모듈 레지스트리: entries/*.txt를 검사하고 index.json을 만든다.
 
 등록 파일에는 이름·저장소·작성자만 있다. 버전·요약·태그·엔진·의존은 모듈 저장소의 v* 태그마다
-module.txt에서 읽는다(정보가 두 곳에 있지 않게). 공식 여부는 저장소 주인이 MealKit-Engine인지로만 정한다.
+module.txt에서 읽는다(정보가 두 곳에 있지 않게). 공식 모듈·공식 표시는 없다.
 
   python tools/build_index.py                  모든 등록 파일 검사 + index.json 쓰기
   python tools/build_index.py --check          검사만 (등록 PR)
@@ -22,7 +22,6 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OFFICIAL_OWNER = "MealKit-Engine"
 NAME_RE = re.compile(r"^[a-z][a-z0-9_]{1,31}$")
 # 엔진·게임과 겹치는 이름 (엔진 cmake/MealKit.cmake와 같은 목록)
 RESERVED = {"mealkit", "sim", "view", "game", "assets", "modules", "std", "core", "net", "ui", "editor"}
@@ -193,7 +192,6 @@ def build(entries, errors, previous):
             latest = versions[0]
             modules.append({
                 "name": entry["name"], "repo": entry["repo"], "author": entry["author"],
-                "official": entry["owner"] == OFFICIAL_OWNER,
                 "title": latest["title"], "summary": latest["summary"], "tags": latest["tags"],
                 "license": latest["license"], "latest": latest["version"],
                 "versions": [{k: v[k] for k in ("version", "tag", "commit", "engine", "requires", "docs")} | {"checks": v.get("checks", {})}
@@ -249,7 +247,7 @@ def main():
             modules += [m for n, m in previous.items() if n not in done and n in {e["name"] for e in entries}]
         modules.sort(key=lambda m: m["name"])
         for m in modules:
-            print(f"ok  {m['name']} {m['latest']}{' (official)' if m['official'] else ''}  {m['repo']}")
+            print(f"ok  {m['name']} {m['latest']}  {m['repo']}")
         if not args.check and not errors.items:
             with open(args.out, "w", encoding="utf-8", newline="\n") as f:
                 json.dump({"format": 1, "modules": modules}, f, ensure_ascii=False, indent=1)

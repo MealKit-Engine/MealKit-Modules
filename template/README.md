@@ -3,7 +3,7 @@
 A source module for [MealKit](https://github.com/MealKit-Engine/MealKit) games. Docs: [docs/index.md](docs/index.md).
 
 ```
-tools\module.ps1 add -Project <your project> https://github.com/__OWNER__/module-mymodule#v0.1.0
+tools\module.ps1 add -Project <your project> mymodule
 ```
 
 Tests (not copied into projects): `cmake -S tests -B build/tests -G Ninja -DMEALKIT_ROOT=<engine> -DMEALKIT_HEADLESS_ONLY=ON`, then build and run `mymodule_tests`.

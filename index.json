@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "modules": [
+  {
+   "name": "cooldown",
+   "repo": "https://github.com/KingProtea99/module-cooldown",
+   "author": "KingProtea99",
+   "official": false,
+   "title": "Cooldowns",
+   "summary": "Tick-based cooldowns for skills and actions, with a fill bar .ui component",
+   "tags": [
+    "gameplay",
+    "timer",
+    "ui"
+   ],
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "c1fc3a1f3591e035d3dd488267f6667f8843a9a4",
+     "engine": "0.5",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  }
+ ]
+}

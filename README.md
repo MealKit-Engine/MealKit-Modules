@@ -1,6 +1,6 @@
 # MealKit-Modules
 
-The list of source modules for [MealKit](https://github.com/MealKit-Engine/MealKit) games. Official modules and everyone else's are listed the same way. A module is **official** when its repository belongs to the `MealKit-Engine` organization; entries cannot claim it.
+The list of source modules for [MealKit](https://github.com/MealKit-Engine/MealKit) games. Every module is listed the same way; there are no official modules.
 
 Each module lives in its own repository. This repository holds only:
 
@@ -33,8 +33,8 @@ Add `entries/<name>.txt` in a pull request:
 ```
 @format module-entry 1
 name cooldown
-repo https://github.com/MealKit-Engine/module-cooldown
-author MealKit
+repo https://github.com/KingProtea99/module-cooldown
+author KingProtea99
 ```
 
 The name is first come, first served. Version, summary, tags, engine version and requirements come from the module's tags and `module.txt`, never from the entry. CI checks the entry and every `v*` tag (`module.txt` name and version match the tag, `LICENSE`, `docs/index.md`), then builds the newest tag with the shared workflow. A person reads the pull request and merges it after CI passes. CI does not review the code: a module runs inside the editor and the game, so read what you add.
