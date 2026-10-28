@@ -5,7 +5,6 @@
    "name": "cooldown",
    "repo": "https://github.com/KingProtea99/module-cooldown",
    "author": "KingProtea99",
-   "official": false,
    "title": "Cooldowns",
    "summary": "Tick-based cooldowns for skills and actions, with a fill bar .ui component",
    "tags": [

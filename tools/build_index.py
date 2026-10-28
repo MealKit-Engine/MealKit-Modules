@@ -172,7 +172,10 @@ def build(entries, errors, previous):
             if tags is None:
                 errors.add(entry["where"], f"cannot read tags of {entry['repo']}: {err}")
                 continue
-            old = {v["tag"]: v for v in previous.get(entry["name"], {}).get("versions", [])}
+            prev = previous.get(entry["name"], {})
+            # index.json은 제목·요약·태그·라이선스를 모듈에 한 번만 둔다. 다시 쓰는 버전에 채워 넣는다.
+            shared = {k: prev[k] for k in ("title", "summary", "tags", "license") if k in prev}
+            old = {v["tag"]: shared | v for v in prev.get("versions", [])}
             versions = []
             for tag, commit in tags.items():
                 if not (tag.startswith("v") and SEMVER_RE.match(tag[1:])):
