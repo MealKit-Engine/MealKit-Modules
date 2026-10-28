@@ -1,6 +1,7 @@
 # 레지스트리 CI.
 #   등록 PR: 바뀐 entries/*.txt를 검사(tools/build_index.py --check --only)하고, 각 모듈 최신 태그를 공용 워크플로로 빌드한다.
 #   main에 합친 뒤와 매일: 모든 모듈의 태그를 다시 읽어 index.json을 만들고 커밋한다.
+#   그다음 web/ + index.json을 사이트(GitHub Pages)로 올린다.
 # 등록 PR은 CI가 통과해도 사람이 읽고 합친다 (docs/MODULES.md "정한 것" 3).
 name: Registry
 
@@ -9,7 +10,7 @@ on:
     paths: ["entries/**", "tools/**", ".github/workflows/**"]
   push:
     branches: [main]
-    paths: ["entries/**", "tools/build_index.py"]
+    paths: ["entries/**", "tools/build_index.py", "web/**"]
   schedule:
     - cron: "17 3 * * *"
   workflow_dispatch:
@@ -77,3 +78,28 @@ jobs:
           git add index.json
           git commit -m "index.json: $(date -u +%Y-%m-%d)"
           git push
+
+  site:
+    name: Publish site
+    needs: index
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main  # index 단계가 방금 커밋한 index.json
+      - name: Assemble
+        run: |
+          mkdir -p site
+          cp -r web/. site/
+          cp index.json site/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4

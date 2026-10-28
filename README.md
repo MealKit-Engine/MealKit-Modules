@@ -10,6 +10,7 @@ Each module lives in its own repository. This repository holds only:
 | `index.json` | The full list, rebuilt by CI from each module's `v*` tags and `module.txt`. The engine tools, MealKit Manager and the editor read it |
 | `template/` | Starting files for a new module (`tools/new_module.py`) |
 | `.github/workflows/module.yml` | The shared module CI: builds a module's tests against the engine and runs SimCheck |
+| `web/` | The registry site (search, tag and engine filters, each module's `docs/index.md`). CI publishes it with `index.json` to GitHub Pages: [mealkit-engine.github.io/MealKit-Modules](https://mealkit-engine.github.io/MealKit-Modules/) |
 | `tools/` | `build_index.py` (check entries, build `index.json`), `check_module.ps1` (what the shared CI runs), `new_module.py` |
 
 ## Make a module
@@ -40,3 +41,5 @@ author KingProtea99
 The name is first come, first served. Version, summary, tags, engine version and requirements come from the module's tags and `module.txt`, never from the entry. CI checks the entry and every `v*` tag (`module.txt` name and version match the tag, `LICENSE`, `docs/index.md`), then builds the newest tag with the shared workflow. A person reads the pull request and merges it after CI passes. CI does not review the code: a module runs inside the editor and the game, so read what you add.
 
 The repository must be public. Once a version is listed, do not move its tag; publish a new version instead.
+
+Preview the site locally: `python -m http.server -d site` after copying `web/` and `index.json` into `site/`.
