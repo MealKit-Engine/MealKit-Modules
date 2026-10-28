@@ -1,0 +1,76 @@
+# 공용 모듈 CI. 모듈 저장소가 한 줄로 부른다 (template/.github/workflows/ci.yml):
+#   uses: MealKit-Engine/MealKit-Modules/.github/workflows/module.yml@v1
+# 레지스트리의 등록 PR(registry.yml)도 같은 워크플로로 새 모듈을 검사한다. 검사 내용은 tools/check_module.ps1 한 곳에 있다.
+# 엔진은 module.txt의 engine(MAJOR.MINOR)에 맞는 가장 새 엔진 태그 v<MAJOR.MINOR>.*로 받는다. 그런 태그가 없으면 main.
+name: Module
+
+on:
+  workflow_call:
+    inputs:
+      module-repo:
+        description: "owner/repo of the module (default: the calling repository)"
+        type: string
+        default: ""
+      module-ref:
+        description: "tag, branch or commit (default: the calling ref)"
+        type: string
+        default: ""
+      engine-ref:
+        description: "engine tag or branch to build against (default: newest v<engine>.* tag from module.txt, else main)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-24.04]
+    steps:
+      - name: Module
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.module-repo || github.repository }}
+          ref: ${{ inputs.module-ref || github.ref }}
+          path: module
+      - name: Registry tools
+        uses: actions/checkout@v4
+        with:
+          repository: MealKit-Engine/MealKit-Modules
+          ref: ${{ github.repository == 'MealKit-Engine/MealKit-Modules' && github.sha || 'v1' }}
+          path: registry
+      - name: Pick engine version
+        id: engine
+        shell: pwsh
+        run: |
+          $ref = "${{ inputs.engine-ref }}"
+          if (-not $ref) {
+              $line = Get-Content module/module.txt | Where-Object { $_ -match '^\s*engine\s+(\d+\.\d+)\s*$' } | Select-Object -First 1
+              $minor = if ($line -match '(\d+\.\d+)') { $Matches[1] } else { "" }
+              $tags = git ls-remote --tags https://github.com/MealKit-Engine/MealKit.git |
+                  ForEach-Object { ($_ -split "`t")[1] -replace '^refs/tags/', '' } |
+                  Where-Object { $_ -match "^v$([regex]::Escape($minor))\.\d+$" } |
+                  Sort-Object { [int]($_ -split '\.')[-1] }
+              $ref = if ($tags) { @($tags)[-1] } else { "main" }
+          }
+          Write-Host "engine $ref"
+          "ref=$ref" >> $env:GITHUB_OUTPUT
+      - name: Engine
+        uses: actions/checkout@v4
+        with:
+          repository: MealKit-Engine/MealKit
+          ref: ${{ steps.engine.outputs.ref }}
+          path: engine
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Install tools (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang
+      - name: Check module
+        shell: pwsh
+        run: registry/tools/check_module.ps1 -Module module -Engine engine -Build build

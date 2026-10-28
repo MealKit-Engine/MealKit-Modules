@@ -1,0 +1,79 @@
+# 레지스트리 CI.
+#   등록 PR: 바뀐 entries/*.txt를 검사(tools/build_index.py --check --only)하고, 각 모듈 최신 태그를 공용 워크플로로 빌드한다.
+#   main에 합친 뒤와 매일: 모든 모듈의 태그를 다시 읽어 index.json을 만들고 커밋한다.
+# 등록 PR은 CI가 통과해도 사람이 읽고 합친다 (docs/MODULES.md "정한 것" 3).
+name: Registry
+
+on:
+  pull_request:
+    paths: ["entries/**", "tools/**", ".github/workflows/**"]
+  push:
+    branches: [main]
+    paths: ["entries/**", "tools/build_index.py"]
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: registry-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  entries:
+    name: Check entries
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      modules: ${{ steps.changed.outputs.modules }}
+      repos: ${{ steps.repos.outputs.repos }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Changed entries
+        id: changed
+        run: |
+          names=$(git diff --name-only --diff-filter=AM "origin/${{ github.base_ref }}...HEAD" -- 'entries/*.txt' | xargs -r -n1 basename | sed 's/\.txt$//')
+          echo "changed: ${names:-none}"
+          json=$(printf '%s\n' $names | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+          echo "modules=$json" >> "$GITHUB_OUTPUT"
+          echo "names=$(echo $names)" >> "$GITHUB_OUTPUT"
+      - name: Entry files and module tags
+        id: repos
+        run: |
+          python3 tools/build_index.py --check --repos-json repos.json ${{ steps.changed.outputs.names && format('--only {0}', steps.changed.outputs.names) || '' }}
+          echo "repos=$(cat repos.json)" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.module }}
+    needs: entries
+    if: needs.entries.outputs.modules != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.entries.outputs.modules) }}
+    uses: ./.github/workflows/module.yml
+    with:
+      module-repo: ${{ fromJSON(needs.entries.outputs.repos)[matrix.module].repo }}
+      module-ref: ${{ fromJSON(needs.entries.outputs.repos)[matrix.module].tag }}
+
+  index:
+    name: Rebuild index.json
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build index.json
+        run: python3 tools/build_index.py
+      - name: Commit
+        run: |
+          git diff --quiet -- index.json && { echo "index.json unchanged"; exit 0; }
+          git config user.name "mealkit-registry"
+          git config user.email "mealkit-registry@users.noreply.github.com"
+          git add index.json
+          git commit -m "index.json: $(date -u +%Y-%m-%d)"
+          git push

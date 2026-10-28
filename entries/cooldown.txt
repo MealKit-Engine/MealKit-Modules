@@ -1,0 +1,4 @@
+@format module-entry 1
+name cooldown
+repo https://github.com/KingProtea99/module-cooldown
+author KingProtea99

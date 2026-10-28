@@ -1,0 +1,9 @@
+# MealKit source module (docs/MODULES.md in the engine). Read by the engine build and tools\module.ps1.
+@format module 1
+name mymodule
+version 0.1.0
+engine __ENGINE__
+title __TITLE__
+summary One line: what the module gives a game
+tags gameplay
+requires
