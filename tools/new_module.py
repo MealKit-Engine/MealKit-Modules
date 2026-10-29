@@ -1,8 +1,8 @@
-"""새 모듈 저장소를 템플릿(template/)에서 만든다.
+"""Creates a new module repo from the template (template/).
 
-  python tools/new_module.py <이름> <폴더> --author "<이름>" [--owner <GitHub 주인>] [--title "<제목>"] [--engine 0.5]
+  python tools/new_module.py <name> <folder> --author "<name>" [--owner <GitHub owner>] [--title "<title>"] [--engine 0.5]
 
-이름은 소문자·숫자·_ (폴더 이름, C++ namespace, 에셋 경로 접두가 된다). 만든 뒤 git init, 첫 커밋, v0.1.0 태그는 직접 한다.
+The name is lowercase letters/digits/_ (it becomes the folder name, C++ namespace, and asset path prefix). After creating, do git init, the first commit, and the v0.1.0 tag yourself.
 """
 
 import argparse
@@ -14,7 +14,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
-from build_index import NAME_RE, RESERVED  # noqa: E402  (등록 검사와 같은 이름 규칙)
+from build_index import NAME_RE, RESERVED  # noqa: E402  (same name rules as the submission check)
 
 TEXT = {".txt", ".h", ".hpp", ".cpp", ".md", ".yml", ".ui", ""}
 

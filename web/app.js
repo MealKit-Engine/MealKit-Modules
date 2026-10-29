@@ -1,5 +1,5 @@
-// 레지스트리 사이트: index.json 하나로 목록·검색·필터를 그리고, 모듈 페이지는 그 버전 커밋의 docs/index.md를 그린다.
-// 주소: #/ (목록, ?q=&tag=&engine=), #/<이름> (최신), #/<이름>@<버전>. 서버 없이 GitHub Pages에 올린다.
+// Registry site: draws the list/search/filters from a single index.json, and module pages render docs/index.md at that version's commit.
+// Addresses: #/ (list, ?q=&tag=&engine=), #/<name> (latest), #/<name>@<version>. Hosted on GitHub Pages without a server.
 "use strict";
 
 const app = document.getElementById("app");
@@ -19,7 +19,7 @@ function engineKey(v) { return v.split(".").map(Number); }
 function cmpEngine(a, b) { const x = engineKey(a), y = engineKey(b); return x[0] - y[0] || x[1] - y[1]; }
 function engines(m) { return [...new Set(m.versions.map(v => v.engine))]; }
 
-// "owner/repo" → 그 커밋의 파일 주소 (raw) 와 사람이 보는 주소 (blob)
+// "owner/repo" → file URL at that commit (raw) and the human-facing URL (blob)
 function rawUrl(m, commit, path) { return m.repo.replace("https://github.com/", "https://raw.githubusercontent.com/") + `/${commit}/${path}`; }
 function blobUrl(m, commit, path) { return `${m.repo}/blob/${commit}/${path}`; }
 
@@ -129,7 +129,7 @@ function renderModule(m, version) {
   loadDoc();
 }
 
-// 문서 안의 상대 경로는 모듈 저장소 기준으로 바꾼다 (그림은 raw, 링크는 blob, #은 그대로)
+// Relative paths inside docs are rewritten relative to the module repo (images raw, links blob, # as is)
 function fixLinks(root, m, commit, docPath) {
   const dir = docPath.includes("/") ? docPath.slice(0, docPath.lastIndexOf("/") + 1) : "";
   const resolve = p => new URL(p, "https://x/" + dir).pathname.slice(1);
@@ -138,7 +138,7 @@ function fixLinks(root, m, commit, docPath) {
   root.querySelectorAll("a[href]").forEach(a => {
     const h = a.getAttribute("href");
     if (relative(h)) a.href = blobUrl(m, commit, resolve(h));
-    else if (h.startsWith("#")) a.removeAttribute("href");  // 해시는 사이트 주소로 쓴다
+    else if (h.startsWith("#")) a.removeAttribute("href");  // hashes are used as site addresses
   });
 }
 

@@ -1,7 +1,7 @@
-﻿# 모듈 저장소 하나를 검사한다 (공용 워크플로 module.yml이 부르고, 로컬에서도 같은 명령으로 돌린다).
-#   module.txt 형식, LICENSE·docs/index.md → 모듈 tests/를 엔진 코어에 링크해 빌드·실행 → SimCheck로 sim/ 검사
-#   pwsh tools/check_module.ps1 -Module <모듈 폴더> -Engine <엔진 폴더> [-Build <빌드 폴더>]
-# 컴파일러는 부르는 쪽이 준비한다 (Windows: vcvars64 또는 msvc-dev-cmd, Linux·macOS: clang). Windows PowerShell 5.1과 pwsh 둘 다 된다.
+﻿# Checks one module repo (called by the shared workflow module.yml, and run locally with the same command).
+#   module.txt format, LICENSE/docs/index.md → builds and runs the module's tests/ linked against the engine core → checks sim/ with SimCheck
+#   pwsh tools/check_module.ps1 -Module <module folder> -Engine <engine folder> [-Build <build folder>]
+# The caller sets up the compiler (Windows: vcvars64 or msvc-dev-cmd, Linux/macOS: clang). Works with both Windows PowerShell 5.1 and pwsh.
 param(
     [Parameter(Mandatory)][string]$Module,
     [Parameter(Mandatory)][string]$Engine,
@@ -15,7 +15,7 @@ $failed = 0
 function Fail([string]$msg) { Write-Host "FAIL $msg" -ForegroundColor Red; $script:failed++ }
 function Pass([string]$msg) { Write-Host "ok   $msg" }
 
-# module.txt (엔진 cmake/MealKit.cmake와 레지스트리 tools/build_index.py가 같은 규칙으로 읽는다)
+# module.txt (the engine's cmake/MealKit.cmake and the registry's tools/build_index.py read it with the same rules)
 $info = @{}
 $mt = Join-Path $Module "module.txt"
 if (-not (Test-Path $mt)) { Fail "module.txt is missing"; exit 1 }
@@ -32,7 +32,7 @@ if (-not (Test-Path (Join-Path $Module "tests/CMakeLists.txt"))) { Fail "tests/C
 if ($failed) { exit 1 }
 Pass "module.txt: $name $($info["version"]), engine $($info["engine"])"
 
-# 프로젝트에서처럼 modules/<이름>/ 아래에 둔다 (SimCheck --modules, #include "<이름>/...")
+# Placed under modules/<name>/ like in a project (SimCheck --modules, #include "<name>/...")
 $stage = Join-Path $Build "modules/$name"
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Force $stage | Out-Null
@@ -41,7 +41,7 @@ foreach ($item in @("module.txt", "sim", "view", "assets", "docs")) {
     if (Test-Path $src) { Copy-Item $src $stage -Recurse }
 }
 
-# 모듈 시험
+# Module tests
 $tests = Join-Path $Build "tests"
 $cfg = @("-S", (Join-Path $Module "tests"), "-B", $tests, "-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release",
          "-DMEALKIT_ROOT=$Engine", "-DMEALKIT_HEADLESS_ONLY=ON")
@@ -54,7 +54,7 @@ $exe = Get-ChildItem $tests -Recurse -File | Where-Object { $_.BaseName -eq "${n
 & $exe.FullName
 if ($LASTEXITCODE -ne 0) { Fail "${name}_tests" } else { Pass "${name}_tests" }
 
-# SimCheck: 결정론 규칙, 게임 source/ include 금지(SIM013), requires에 없는 모듈 include 금지(SIM014)
+# SimCheck: determinism rules, no including game source/ (SIM013), no including modules not in requires (SIM014)
 $simcheck = Get-ChildItem $tests -Recurse -File | Where-Object { $_.BaseName -eq "mealkit_simcheck" -and ($_.Extension -in @(".exe", "")) } | Select-Object -First 1
 $simFiles = @(Get-ChildItem (Join-Path $stage "sim") -Recurse -File -Include *.h, *.hpp, *.cpp -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })
 if ($simFiles.Count -eq 0) {

@@ -1,15 +1,15 @@
-"""MealKit 모듈 레지스트리: entries/*.txt를 검사하고 index.json을 만든다.
+"""MealKit module registry: checks entries/*.txt and builds index.json.
 
-등록 파일에는 이름·저장소·작성자만 있다. 버전·요약·태그·엔진·의존은 모듈 저장소의 v* 태그마다
-module.txt에서 읽는다(정보가 두 곳에 있지 않게). 공식 모듈·공식 표시는 없다.
+Entry files contain only name/repo/author. Version/summary/tags/engine/dependencies are read from module.txt
+at each v* tag of the module repo (so the information isn't in two places). There are no official modules or official badges.
 
-  python tools/build_index.py                  모든 등록 파일 검사 + index.json 쓰기
-  python tools/build_index.py --check          검사만 (등록 PR)
-  python tools/build_index.py --only cooldown  그 등록 파일만 (PR에서 바뀐 것)
-  python tools/build_index.py --allow-local    repo에 로컬 폴더를 허용 (시험용)
-  python tools/build_index.py --check --repos-json repos.json   검사한 모듈의 저장소·최신 태그 (등록 PR 빌드)
+  python tools/build_index.py                  check all entry files + write index.json
+  python tools/build_index.py --check          check only (submission PRs)
+  python tools/build_index.py --only cooldown  only that entry file (the one changed in a PR)
+  python tools/build_index.py --allow-local    allow local folders as repo (for tests)
+  python tools/build_index.py --check --repos-json repos.json   repos/latest tags of checked modules (submission PR builds)
 
-표준 라이브러리만 쓴다. git이 PATH에 있어야 한다.
+Uses only the standard library. git must be on PATH.
 """
 
 import argparse
@@ -23,7 +23,7 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NAME_RE = re.compile(r"^[a-z][a-z0-9_]{1,31}$")
-# 엔진·게임과 겹치는 이름 (엔진 cmake/MealKit.cmake와 같은 목록)
+# Names that collide with the engine/game (same list as the engine's cmake/MealKit.cmake)
 RESERVED = {"mealkit", "sim", "view", "game", "assets", "modules", "std", "core", "net", "ui", "editor"}
 REPO_RE = re.compile(r"^https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+?)(\.git)?$")
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
@@ -39,7 +39,7 @@ class Errors:
 
 
 def read_kv(text):
-    """'@format' 줄과 '키 값' 줄. 빈 줄·# 주석은 건너뛴다. 같은 키가 두 번이면 오류."""
+    """'@format' lines and 'key value' lines. Empty lines/# comments are skipped. The same key twice is an error."""
     fmt, kv, dup = None, {}, []
     for line in text.splitlines():
         line = line.strip().lstrip("﻿")
@@ -62,7 +62,7 @@ def git(*args, cwd=None):
 
 
 def remote_tags(repo):
-    """{태그: 커밋}. 주석 태그는 ^{}가 가리키는 커밋을 쓴다."""
+    """{tag: commit}. Annotated tags use the commit ^{} points to."""
     code, out, err = git("ls-remote", "--tags", repo)
     if code != 0:
         return None, err.splitlines()[-1] if err else "git ls-remote failed"
@@ -111,7 +111,7 @@ def read_entry(path, errors, allow_local):
 
 
 def check_version(entry, tag, commit, work, errors):
-    """태그 하나를 받아 module.txt·LICENSE·docs/index.md를 본다. 맞으면 버전 항목, 아니면 None."""
+    """Fetches one tag and looks at module.txt/LICENSE/docs/index.md. A version entry if valid, otherwise None."""
     where = f"{entry['where']} {tag}"
     dst = os.path.join(work, f"{entry['name']}-{tag}")
     code, _, err = git("clone", "--quiet", "--depth", "1", "--branch", tag, entry["repo"], dst)
@@ -173,7 +173,7 @@ def build(entries, errors, previous):
                 errors.add(entry["where"], f"cannot read tags of {entry['repo']}: {err}")
                 continue
             prev = previous.get(entry["name"], {})
-            # index.json은 제목·요약·태그·라이선스를 모듈에 한 번만 둔다. 다시 쓰는 버전에 채워 넣는다.
+            # index.json keeps title/summary/tags/license once per module. They're filled into the version being written.
             shared = {k: prev[k] for k in ("title", "summary", "tags", "license") if k in prev}
             old = {v["tag"]: shared | v for v in prev.get("versions", [])}
             versions = []
@@ -181,7 +181,7 @@ def build(entries, errors, previous):
                 if not (tag.startswith("v") and SEMVER_RE.match(tag[1:])):
                     continue
                 if tag in old and old[tag]["commit"] != commit:
-                    # 한 번 올린 버전의 태그를 옮기면 받는 쪽 커밋 검사가 깨진다. 새 버전을 내야 한다.
+                    # Moving the tag of an already published version breaks the consumer's commit check. A new version must be released.
                     errors.add(f"{entry['where']} {tag}", f"tag moved from {old[tag]['commit'][:10]} to {commit[:10]}; publish a new version instead")
                     versions.append(old[tag])
                     continue
@@ -240,12 +240,12 @@ def main():
             errors.add(f"entries/{name}.txt", "not found")
     if not errors.items:
         modules = build(targets, errors, previous)
-        if args.repos_json:  # registry.yml이 공용 워크플로로 빌드할 모듈: {이름: {repo: owner/repo, tag}}
+        if args.repos_json:  # modules registry.yml builds with the shared workflow: {name: {repo: owner/repo, tag}}
             repos = {m["name"]: {"repo": m["repo"].removeprefix("https://github.com/"), "tag": m["versions"][0]["tag"]}
                      for m in modules}
             with open(args.repos_json, "w", encoding="utf-8") as f:
                 json.dump(repos, f, separators=(",", ":"))
-        if args.only:  # 나머지는 지난 목록을 그대로 둔다
+        if args.only:  # the rest keep the previous list as is
             done = {m["name"] for m in modules}
             modules += [m for n, m in previous.items() if n not in done and n in {e["name"] for e in entries}]
         modules.sort(key=lambda m: m["name"])

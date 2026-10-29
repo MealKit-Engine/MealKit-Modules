@@ -1,7 +1,7 @@
-# 공용 모듈 CI. 모듈 저장소가 한 줄로 부른다 (template/.github/workflows/ci.yml):
+# Shared module CI. Module repos call it in one line (template/.github/workflows/ci.yml):
 #   uses: MealKit-Engine/MealKit-Modules/.github/workflows/module.yml@v1
-# 레지스트리의 등록 PR(registry.yml)도 같은 워크플로로 새 모듈을 검사한다. 검사 내용은 tools/check_module.ps1 한 곳에 있다.
-# 엔진은 module.txt의 engine(MAJOR.MINOR)에 맞는 가장 새 엔진 태그 v<MAJOR.MINOR>.*로 받는다. 그런 태그가 없으면 main.
+# Registry submission PRs (registry.yml) check new modules with the same workflow. The checks live in one place, tools/check_module.ps1.
+# The engine is fetched at the newest engine tag v<MAJOR.MINOR>.* matching module.txt's engine (MAJOR.MINOR). main if there's no such tag.
 name: Module
 
 on:
