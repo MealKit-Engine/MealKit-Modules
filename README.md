@@ -2,6 +2,8 @@
 
 The list of source modules for [MealKit](https://github.com/MealKit-Engine/MealKit) games. Every module is listed the same way; there are no official modules.
 
+> **Beta (v0.x).** MealKit is under active development: APIs and file formats may change between versions until v1.0, and projects are moved forward with the upgrade tool. Feedback and bug reports are welcome.
+
 Each module lives in its own repository. This repository holds only:
 
 | Path | What |
