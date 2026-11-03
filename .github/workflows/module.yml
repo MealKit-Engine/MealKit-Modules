@@ -33,13 +33,13 @@ jobs:
         os: [windows-2022, ubuntu-24.04]
     steps:
       - name: Module
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.module-repo || github.repository }}
           ref: ${{ inputs.module-ref || github.ref }}
           path: module
       - name: Registry tools
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: MealKit-Engine/MealKit-Modules
           ref: ${{ github.repository == 'MealKit-Engine/MealKit-Modules' && github.sha || 'v1' }}
@@ -61,13 +61,18 @@ jobs:
           Write-Host "engine $ref"
           "ref=$ref" >> $env:GITHUB_OUTPUT
       - name: Engine
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: MealKit-Engine/MealKit
           ref: ${{ steps.engine.outputs.ref }}
           path: engine
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: MSVC environment
         if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # vcvars64 into the job environment (replaces ilammy/msvc-dev-cmd, which still runs on Node 20)
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          cmd /c "`"$vs\VC\Auxiliary\Build\vcvars64.bat`" >nul && set" | Where-Object { $_ -match '^[^=]+=' } | Out-File $env:GITHUB_ENV -Append -Encoding utf8
       - name: Install tools (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang

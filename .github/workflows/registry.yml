@@ -30,7 +30,7 @@ jobs:
       modules: ${{ steps.changed.outputs.modules }}
       repos: ${{ steps.repos.outputs.repos }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Changed entries
@@ -67,7 +67,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build index.json
         run: python3 tools/build_index.py
       - name: Commit
@@ -90,7 +90,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main  # the index.json the index step just committed
       - name: Assemble
@@ -98,8 +98,8 @@ jobs:
           mkdir -p site
           cp -r web/. site/
           cp index.json site/
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
