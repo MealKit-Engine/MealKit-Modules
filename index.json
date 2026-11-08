@@ -12,6 +12,7 @@
     "timer",
     "ui"
    ],
+   "icon": "",
    "license": "MIT",
    "latest": "0.1.0",
    "versions": [
