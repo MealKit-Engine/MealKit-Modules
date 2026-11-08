@@ -55,7 +55,7 @@ def main():
             else:
                 shutil.copyfile(os.path.join(dirpath, f), out)
     print(f"created module '{a.name}' in {a.dest}")
-    print("next: git init, commit, tag v0.1.0, push; then a pull request adding entries/%s.txt" % a.name)
+    print("next: git init, commit, tag v0.1.0, push to a repo named module-%s; then a pull request adding entries/%s.txt" % (a.name, a.name))
 
 
 if __name__ == "__main__":

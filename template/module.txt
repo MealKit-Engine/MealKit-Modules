@@ -6,4 +6,5 @@ engine __ENGINE__
 title __TITLE__
 summary One line: what the module gives a game
 tags gameplay
+icon gameplay
 requires

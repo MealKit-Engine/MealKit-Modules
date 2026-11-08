@@ -140,6 +140,8 @@ def check_version(entry, tag, commit, work, errors):
         errors.add(where, "docs/index.md is missing"); ok = False
     if not ok:
         return None
+    if not re.match(r"^[a-z][a-z0-9_-]*$", kv.get("icon", "x")):
+        errors.add(where, "icon must be one lowercase keyword (docs/MODULES.md \"module.txt\")"); return None
     requires = []
     for req in kv.get("requires", "").split():
         rname, _, rver = req.partition("@")
@@ -147,7 +149,7 @@ def check_version(entry, tag, commit, work, errors):
     return {
         "version": kv["version"], "tag": tag, "commit": commit, "engine": kv["engine"], "requires": requires,
         "title": kv.get("title", entry["name"]), "summary": kv.get("summary", ""),
-        "tags": kv.get("tags", "").split(), "license": guess_license(os.path.join(dst, licenses[0])),
+        "tags": kv.get("tags", "").split(), "icon": kv.get("icon", ""), "license": guess_license(os.path.join(dst, licenses[0])),
         "docs": {lang: f"docs/{f}" for lang, f in (("en", "index.md"), ("ko", "index.ko.md"))
                  if os.path.isfile(os.path.join(dst, "docs", f))},
     }
@@ -174,7 +176,7 @@ def build(entries, errors, previous):
                 continue
             prev = previous.get(entry["name"], {})
             # index.json keeps title/summary/tags/license once per module. They're filled into the version being written.
-            shared = {k: prev[k] for k in ("title", "summary", "tags", "license") if k in prev}
+            shared = {k: prev[k] for k in ("title", "summary", "tags", "icon", "license") if k in prev}
             old = {v["tag"]: shared | v for v in prev.get("versions", [])}
             versions = []
             for tag, commit in tags.items():
@@ -195,7 +197,7 @@ def build(entries, errors, previous):
             latest = versions[0]
             modules.append({
                 "name": entry["name"], "repo": entry["repo"], "author": entry["author"],
-                "title": latest["title"], "summary": latest["summary"], "tags": latest["tags"],
+                "title": latest["title"], "summary": latest["summary"], "tags": latest["tags"], "icon": latest.get("icon", ""),
                 "license": latest["license"], "latest": latest["version"],
                 "versions": [{k: v[k] for k in ("version", "tag", "commit", "engine", "requires", "docs")} | {"checks": v.get("checks", {})}
                              for v in versions],
