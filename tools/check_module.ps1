@@ -26,6 +26,13 @@ $name = $info["name"]
 if ($name -notmatch '^[a-z][a-z0-9_]{1,31}$') { Fail "module.txt name '$name' must be 2-32 of a-z 0-9 _"; exit 1 }
 if ($info["version"] -notmatch '^\d+\.\d+\.\d+$') { Fail "module.txt version '$($info["version"])' must be MAJOR.MINOR.PATCH" }
 if ($info["engine"] -notmatch '^\d+\.\d+$') { Fail "module.txt engine '$($info["engine"])' must be MAJOR.MINOR" }
+# icon: one keyword from MealKit-Contract kModuleIconKeywords (an unknown one only warns: programs fall back to the tags)
+$iconKeywords = @("gameplay", "game", "timer", "combat", "health", "ai", "map", "save", "ui", "audio", "render", "rhi", "camera", "physics",
+    "net", "online", "input", "data", "asset", "scene", "debug", "tool", "editor", "settings", "loc", "feedback", "live", "session", "sim")
+if ($info.Contains("icon")) {
+    if ($info["icon"] -notmatch '^[a-z][a-z0-9_-]*$') { Fail "module.txt icon '$($info["icon"])' must be one lowercase keyword" }
+    elseif ($iconKeywords -notcontains $info["icon"]) { Write-Host "warn module.txt icon '$($info["icon"])' is not a known keyword ($($iconKeywords -join ' '))" -ForegroundColor Yellow }
+}
 if (-not (Get-ChildItem $Module -Filter "LICENSE*" -File)) { Fail "LICENSE is missing" }
 if (-not (Test-Path (Join-Path $Module "docs/index.md"))) { Fail "docs/index.md is missing" }
 if (-not (Test-Path (Join-Path $Module "tests/CMakeLists.txt"))) { Fail "tests/CMakeLists.txt is missing (module unit tests)" }

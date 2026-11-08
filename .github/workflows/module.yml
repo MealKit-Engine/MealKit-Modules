@@ -1,5 +1,5 @@
 # Shared module CI. Module repos call it in one line (template/.github/workflows/ci.yml):
-#   uses: MealKit-Engine/MealKit-Modules/.github/workflows/module.yml@v1
+#   uses: MealKit-Engine/MealKit-Modules/.github/workflows/module.yml@v2
 # Registry submission PRs (registry.yml) check new modules with the same workflow. The checks live in one place, tools/check_module.ps1.
 # The engine is fetched at the newest engine tag v<MAJOR.MINOR>.* matching module.txt's engine (MAJOR.MINOR). main if there's no such tag.
 name: Module

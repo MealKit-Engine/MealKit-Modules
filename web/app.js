@@ -19,6 +19,16 @@ function engineKey(v) { return v.split(".").map(Number); }
 function cmpEngine(a, b) { const x = engineKey(a), y = engineKey(b); return x[0] - y[0] || x[1] - y[1]; }
 function engines(m) { return [...new Set(m.versions.map(v => v.engine))]; }
 
+// Module icon keywords (MealKit-Contract docs/CONTRACT.md "Module icons"): icon, else the first tag that is one, else the name
+const ICONS = { gameplay: "🎮", game: "🎮", timer: "⏱️", combat: "🛡️", health: "❤️", ai: "🤖", map: "📍", save: "💾", ui: "🖥️",
+  audio: "🔊", render: "🎨", rhi: "🎨", camera: "📷", physics: "🧊", net: "📡", online: "🌐", input: "⌨️", data: "🗃️",
+  asset: "📁", scene: "🌳", debug: "🐞", tool: "🔧", editor: "🔧", settings: "⚙️", loc: "🔤", feedback: "⚡", live: "🔄",
+  session: "👥", sim: "🧮" };
+function iconOf(m) {
+  const k = [m.icon, ...(m.tags || []).filter(t => t !== "engine"), m.name, m.name.split("-")[0]].find(w => w && ICONS[w]);
+  return k ? ICONS[k] : "🧩";
+}
+
 // "owner/repo" → file URL at that commit (raw) and the human-facing URL (blob)
 function rawUrl(m, commit, path) { return m.repo.replace("https://github.com/", "https://raw.githubusercontent.com/") + `/${commit}/${path}`; }
 function blobUrl(m, commit, path) { return `${m.repo}/blob/${commit}/${path}`; }
@@ -65,7 +75,7 @@ function renderList(params) {
     el("p", { class: "muted" }, `${hits.length} of ${index.modules.length} modules`),
     el("div", { class: "list" }, hits.map(m =>
       el("a", { class: "card", href: `#/${m.name}` },
-        el("h3", {}, m.title, " ", el("span", { class: "name" }, m.name)),
+        el("h3", {}, el("span", { class: "icon", "aria-hidden": "true" }, iconOf(m)), " ", m.title, " ", el("span", { class: "name" }, m.name)),
         el("p", {}, m.summary),
         el("div", { class: "meta" },
           el("span", {}, `v${m.latest}`), el("span", {}, `engine ${engines(m).join(", ")}`),
