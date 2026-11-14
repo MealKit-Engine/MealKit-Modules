@@ -1,0 +1,4 @@
+@format module-entry 1
+name objects
+repo https://github.com/KingProtea99/module-objects
+author KingProtea99

@@ -1,0 +1,4 @@
+@format module-entry 1
+name camrig
+repo https://github.com/KingProtea99/module-camrig
+author KingProtea99

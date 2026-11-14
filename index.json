@@ -2,6 +2,53 @@
  "format": 1,
  "modules": [
   {
+   "name": "camrig",
+   "repo": "https://github.com/KingProtea99/module-camrig",
+   "author": "KingProtea99",
+   "title": "Camera rigs",
+   "summary": "Player camera controls: orbit and zoom over the engine's camera brain, and a 2D side-view follow camera",
+   "tags": [
+    "camera",
+    "view",
+    "2d"
+   ],
+   "icon": "camera",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "16021f4d011b3be5442abfec8d86d443c4ae133e",
+     "engine": "0.9",
+     "requires": [
+      {
+       "name": "camera"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "input"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "render"
+      },
+      {
+       "name": "0.4"
+      }
+     ],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
    "name": "cooldown",
    "repo": "https://github.com/KingProtea99/module-cooldown",
    "author": "KingProtea99",
@@ -22,6 +69,177 @@
      "commit": "c1fc3a1f3591e035d3dd488267f6667f8843a9a4",
      "engine": "0.5",
      "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "matchflow",
+   "repo": "https://github.com/KingProtea99/module-matchflow",
+   "author": "KingProtea99",
+   "title": "Match flow",
+   "summary": "Waiting, start countdown, rounds (best of N, score limit, time limit, elimination, teams, co-op) and results",
+   "tags": [
+    "gameplay",
+    "rules",
+    "rounds"
+   ],
+   "icon": "flag",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "3db9e5d722001a8ea0f1c59d16fa296b79333142",
+     "engine": "0.9",
+     "requires": [
+      {
+       "name": "sim"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "session"
+      },
+      {
+       "name": "0.1"
+      }
+     ],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "objects",
+   "repo": "https://github.com/KingProtea99/module-objects",
+   "author": "KingProtea99",
+   "title": "Basic objects",
+   "summary": "Trigger volumes, path platforms, timers, rule rows with active effects and item spawn points, deterministic and physics-free",
+   "tags": [
+    "gameplay"
+   ],
+   "icon": "gameplay",
+   "license": "MIT",
+   "latest": "0.2.0",
+   "versions": [
+    {
+     "version": "0.2.0",
+     "tag": "v0.2.0",
+     "commit": "cf586863b28f19c6991f71baaefd268059c9fc8a",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    },
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "6242f08d14cce8d4075d4f3d3dfb164d12ad697f",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "procgen",
+   "repo": "https://github.com/KingProtea99/module-procgen",
+   "author": "KingProtea99",
+   "title": "Procedural placement",
+   "summary": "Seed-based placement of points in an area with minimum spacing, weighted picks and shuffles",
+   "tags": [
+    "gameplay",
+    "map"
+   ],
+   "icon": "map",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "c335f358335ed7b8e9f534d4db895ac9bfab37d9",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "screens",
+   "repo": "https://github.com/KingProtea99/module-screens",
+   "author": "KingProtea99",
+   "title": "Screen flow",
+   "summary": "Title, menu, join (LAN rooms, address, Steam), lobby with chat, loading, pause and results screens over the engine's match service",
+   "tags": [
+    "ui",
+    "menu",
+    "lobby",
+    "multiplayer"
+   ],
+   "icon": "menu",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "841f0cac4977123d80473a499dbeb942674a0d70",
+     "engine": "0.9",
+     "requires": [
+      {
+       "name": "game"
+      },
+      {
+       "name": "0.2"
+      },
+      {
+       "name": "ui"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "loc"
+      },
+      {
+       "name": "0.2"
+      },
+      {
+       "name": "settings"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "input"
+      },
+      {
+       "name": "0.1"
+      },
+      {
+       "name": "session"
+      },
+      {
+       "name": "0.1"
+      }
+     ],
      "docs": {
       "en": "docs/index.md"
      },

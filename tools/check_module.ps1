@@ -35,7 +35,11 @@ if ($info.Contains("icon")) {
 }
 if (-not (Get-ChildItem $Module -Filter "LICENSE*" -File)) { Fail "LICENSE is missing" }
 if (-not (Test-Path (Join-Path $Module "docs/index.md"))) { Fail "docs/index.md is missing" }
-if (-not (Test-Path (Join-Path $Module "tests/CMakeLists.txt"))) { Fail "tests/CMakeLists.txt is missing (module unit tests)" }
+# Unit tests are built headless (engine core only), so they are required only for modules with sim/: a view/app-only module
+# (screens, camera rigs) can have none, and then only the layout and module.txt are checked
+$hasSim = @(Get-ChildItem (Join-Path $Module "sim") -Recurse -File -Include *.h, *.hpp, *.cpp -ErrorAction SilentlyContinue).Count -gt 0
+$hasTests = Test-Path (Join-Path $Module "tests/CMakeLists.txt")
+if ($hasSim -and -not $hasTests) { Fail "tests/CMakeLists.txt is missing (module unit tests, required with sim/)" }
 if ($failed) { exit 1 }
 Pass "module.txt: $name $($info["version"]), engine $($info["engine"])"
 
@@ -48,7 +52,13 @@ foreach ($item in @("module.txt", "sim", "view", "app", "assets", "docs")) {
     if (Test-Path $src) { Copy-Item $src $stage -Recurse }
 }
 
-# Module tests
+# Module tests (none for a view/app-only module without tests/)
+if (-not $hasTests) {
+    Pass "tests (none: no sim/, view/app only)"
+    if ($failed) { exit 1 }
+    Write-Host "module $name passed"
+    exit 0
+}
 $tests = Join-Path $Build "tests"
 $cfg = @("-S", (Join-Path $Module "tests"), "-B", $tests, "-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release",
          "-DMEALKIT_ROOT=$Engine", "-DMEALKIT_HEADLESS_ONLY=ON")
