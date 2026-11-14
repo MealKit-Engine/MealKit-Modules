@@ -21,7 +21,7 @@ Each module lives in its own repository. This repository holds only:
 python tools/new_module.py <name> <folder> --author "<you>" --owner <github owner>
 ```
 
-Write the code in `sim/` (deterministic, takes only the module's own state), `view/` and `assets/`, document it in `docs/index.md`, then push and tag `v0.1.0` (same as `version` in `module.txt`). The template's `.github/workflows/ci.yml` runs the shared CI on every push.
+Write the code in `sim/` (deterministic, takes only the module's own state), `view/`, `app/` (screens and session code the game calls from its own `app/`, engine 0.9.8+) and `assets/` (with `assets/strings/<lang>.txt` for the module's text), document it in `docs/index.md`, then push and tag `v0.1.0` (same as `version` in `module.txt`). The template's `.github/workflows/ci.yml` runs the shared CI on every push.
 
 Check locally the same way CI does (with a compiler environment, for example a Visual Studio x64 prompt):
 

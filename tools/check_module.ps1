@@ -43,7 +43,7 @@ Pass "module.txt: $name $($info["version"]), engine $($info["engine"])"
 $stage = Join-Path $Build "modules/$name"
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Force $stage | Out-Null
-foreach ($item in @("module.txt", "sim", "view", "assets", "docs")) {
+foreach ($item in @("module.txt", "sim", "view", "app", "assets", "docs")) {
     $src = Join-Path $Module $item
     if (Test-Path $src) { Copy-Item $src $stage -Recurse }
 }
