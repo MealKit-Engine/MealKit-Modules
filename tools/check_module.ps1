@@ -52,6 +52,20 @@ foreach ($item in @("module.txt", "sim", "view", "app", "assets", "docs")) {
     if (Test-Path $src) { Copy-Item $src $stage -Recurse }
 }
 
+# Source modules this one requires, when checked out beside it as module-<name> (staged so SimCheck sees them like in a project;
+# engine modules in requires need nothing here)
+foreach ($dep in @("$($info["requires"])" -split "\s+" | Where-Object { $_ -match '^[a-z][a-z0-9_]+$' })) {
+    $depDir = Join-Path (Split-Path $Module -Parent) "module-$dep"
+    if (-not (Test-Path (Join-Path $depDir "module.txt"))) { continue }
+    $depStage = Join-Path $Build "modules/$dep"
+    if (Test-Path $depStage) { Remove-Item $depStage -Recurse -Force }
+    New-Item -ItemType Directory -Force $depStage | Out-Null
+    foreach ($item in @("module.txt", "sim", "view", "app", "assets")) {
+        $src = Join-Path $depDir $item
+        if (Test-Path $src) { Copy-Item $src $depStage -Recurse }
+    }
+}
+
 # Module tests (none for a view/app-only module without tests/)
 if (-not $hasTests) {
     Pass "tests (none: no sim/, view/app only)"

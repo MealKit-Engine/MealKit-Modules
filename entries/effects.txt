@@ -1,0 +1,4 @@
+@format module-entry 1
+name effects
+repo https://github.com/KingProtea99/module-effects
+author KingProtea99

@@ -1,0 +1,4 @@
+@format module-entry 1
+name tags
+repo https://github.com/KingProtea99/module-tags
+author KingProtea99

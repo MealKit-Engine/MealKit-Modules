@@ -1,0 +1,4 @@
+@format module-entry 1
+name stats
+repo https://github.com/KingProtea99/module-stats
+author KingProtea99
