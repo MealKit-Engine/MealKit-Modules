@@ -76,6 +76,16 @@ jobs:
       - name: Install tools (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang
+      - name: Required source modules
+        shell: pwsh
+        run: |
+          # Source modules in module.txt "requires" are cloned beside the module as module-<name> (tools/check_module.ps1 and the
+          # module's tests/CMakeLists.txt look there). Engine modules aren't in that account and are skipped.
+          $line = Get-Content module/module.txt | Where-Object { $_ -match '^\s*requires\b' } | Select-Object -First 1
+          foreach ($dep in @("$line" -split '\s+' | Select-Object -Skip 1 | Where-Object { $_ -match '^[a-z][a-z0-9_]+$' })) {
+              git clone --depth 1 "https://github.com/KingProtea99/module-$dep" "module-$dep" 2>$null
+              if ($LASTEXITCODE -eq 0) { Write-Host "required module $dep" } else { Write-Host "required $dep: not a source module here, skipped" }
+          }
       - name: Check module
         shell: pwsh
         run: registry/tools/check_module.ps1 -Module module -Engine engine -Build build
