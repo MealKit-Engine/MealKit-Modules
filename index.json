@@ -2,6 +2,44 @@
  "format": 1,
  "modules": [
   {
+   "name": "ai",
+   "repo": "https://github.com/KingProtea99/module-ai",
+   "author": "KingProtea99",
+   "title": "Game AI",
+   "summary": "Utility scoring, enum state machine brain, sight and hearing perception, nav grid route following, path patrol, debug drawing",
+   "tags": [
+    "gameplay",
+    "ai"
+   ],
+   "icon": "ai",
+   "license": "MIT",
+   "latest": "0.2.0",
+   "versions": [
+    {
+     "version": "0.2.0",
+     "tag": "v0.2.0",
+     "commit": "9e0702e5541a18b2b0bcd08a80f73f78ce4fdb63",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    },
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "e600589fd98fecb8cda6b8c038f0fc5533edfc8f",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
    "name": "camrig",
    "repo": "https://github.com/KingProtea99/module-camrig",
    "author": "KingProtea99",
@@ -68,6 +106,97 @@
      "tag": "v0.1.0",
      "commit": "c1fc3a1f3591e035d3dd488267f6667f8843a9a4",
      "engine": "0.5",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "effects",
+   "repo": "https://github.com/KingProtea99/module-effects",
+   "author": "KingProtea99",
+   "title": "Effects",
+   "summary": "Timed or permanent stat modifiers with stacking rules, periodic ticks and granted tags",
+   "tags": [
+    "gameplay",
+    "combat"
+   ],
+   "icon": "combat",
+   "license": "MIT",
+   "latest": "0.1.1",
+   "versions": [
+    {
+     "version": "0.1.1",
+     "tag": "v0.1.1",
+     "commit": "ff57dfe57f5a773580b6103e89c691b4c551e8ab",
+     "engine": "0.9",
+     "requires": [
+      {
+       "name": "tags"
+      },
+      {
+       "name": "stats"
+      }
+     ],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    },
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "40b8c57535f3c778cadb171a52be9434f342844a",
+     "engine": "0.9",
+     "requires": [
+      {
+       "name": "tags"
+      },
+      {
+       "name": "stats"
+      }
+     ],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "health",
+   "repo": "https://github.com/KingProtea99/module-health",
+   "author": "KingProtea99",
+   "title": "Health",
+   "summary": "Hit points, damage, healing, invulnerability, death and respawn wait, hit queries, health bar .ui",
+   "tags": [
+    "gameplay",
+    "combat",
+    "health"
+   ],
+   "icon": "health",
+   "license": "MIT",
+   "latest": "0.2.0",
+   "versions": [
+    {
+     "version": "0.2.0",
+     "tag": "v0.2.0",
+     "commit": "463111a0b920018ef27f71e633846a79de0a4524",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    },
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "7b65e1e87c274bd8714050d1aaabce45dafe7c5f",
+     "engine": "0.9",
      "requires": [],
      "docs": {
       "en": "docs/index.md"
@@ -240,6 +369,60 @@
        "name": "0.1"
       }
      ],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "stats",
+   "repo": "https://github.com/KingProtea99/module-stats",
+   "author": "KingProtea99",
+   "title": "Stats",
+   "summary": "Fixed-point attributes with base values and modifiers recomputed in a fixed order",
+   "tags": [
+    "gameplay",
+    "combat"
+   ],
+   "icon": "combat",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "dee17e84b3696dbf7ee25bde0dfca836abe7a83d",
+     "engine": "0.9",
+     "requires": [],
+     "docs": {
+      "en": "docs/index.md"
+     },
+     "checks": {}
+    }
+   ]
+  },
+  {
+   "name": "tags",
+   "repo": "https://github.com/KingProtea99/module-tags",
+   "author": "KingProtea99",
+   "title": "Gameplay tags",
+   "summary": "Hierarchical tag ids interned at match start, counted grants and can-act checks",
+   "tags": [
+    "gameplay",
+    "combat"
+   ],
+   "icon": "gameplay",
+   "license": "MIT",
+   "latest": "0.1.0",
+   "versions": [
+    {
+     "version": "0.1.0",
+     "tag": "v0.1.0",
+     "commit": "83c05f0211c2edd8c7c529a620ca4bd120d8d5f6",
+     "engine": "0.9",
+     "requires": [],
      "docs": {
       "en": "docs/index.md"
      },
